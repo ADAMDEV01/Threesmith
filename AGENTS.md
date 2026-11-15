@@ -74,5 +74,7 @@ node dist/cli.js --help
 - State a release number on a rule (`removedIn`, `introducedIn`, `deprecatedIn`) only when you verified it in the
   three changelog/migration guide or the source. Leave it out when unsure.
 - Never claim benchmark numbers that were not measured.
+- Pull requests do not edit `CHANGELOG.md`; the maintainer adds the entry, with credit to the contributor, when it is
+  merged. This keeps pull requests from conflicting with each other.
 - Output meant for agents is compact and stable: one line per finding, capped lists, numbers rounded. Never write to stdout in code the MCP server runs.
 - Commit as `laaielichter <laaielichter@users.noreply.github.com>`; see `CLAUDE.md`.
