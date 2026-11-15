@@ -18,6 +18,10 @@ Thanks for helping. Small fixes and big ideas are both welcome.
 3. Add a test that fires and one that stays quiet in `test/review.test.ts`.
 4. `npm run check` must pass, including the "no false alarms on three's own addons" test.
 
+## Pull requests
+
+Keep each pull request to one change and make sure `npm run check` passes. Do not edit `CHANGELOG.md` in your pull request; the maintainer adds the entry, with credit to you, when it is merged. This keeps pull requests from conflicting with each other.
+
 ## Set up
 
 ```sh
