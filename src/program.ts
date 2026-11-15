@@ -470,7 +470,7 @@ export function buildProgram(): Command {
     .option("--full", "every finding")
     .option("--json", "JSON output")
     .action((file: string, o: { archetype?: string; maxTriangles?: string; maxDrawCalls?: string; full?: boolean; json?: boolean }) => {
-      const r = lintModelFile(file, { ...(o.archetype ? { archetype: o.archetype } : {}), ...(o.maxTriangles ? { maxTriangles: Number(o.maxTriangles) } : {}), ...(o.maxDrawCalls ? { maxDrawCalls: Number(o.maxDrawCalls) } : {}) });
+      const r = lintModelFile(file, { ...(o.archetype ? { archetype: o.archetype } : {}), ...(o.maxTriangles !== undefined ? { maxTriangles: positiveInt("--max-triangles", o.maxTriangles) } : {}), ...(o.maxDrawCalls !== undefined ? { maxDrawCalls: positiveInt("--max-draw-calls", o.maxDrawCalls) } : {}) });
       out(o.json ? JSON.stringify(r, null, 2) : formatLint(r, o.full ? "full" : "brief"));
       if (r.failed) process.exitCode = 1;
     });
