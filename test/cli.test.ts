@@ -86,6 +86,28 @@ describe.skipIf(!existsSync("dist/cli.js"))("built cli", () => {
     expect(record.stdout.toString()).toContain("recorded: shadows/acne-and-bias helped");
   });
 
+  it("rejects invalid model lint budgets and accepts valid ones", () => {
+    const robot = "examples/agent-mistakes/public/models/robot.glb";
+    for (const [flag, value] of [
+      ["--max-triangles", "abc"],
+      ["--max-triangles", "0"],
+      ["--max-triangles", "-5"],
+      ["--max-triangles", "1.5"],
+      ["--max-draw-calls", "abc"],
+      ["--max-draw-calls", "0"],
+      ["--max-draw-calls", "-5"],
+      ["--max-draw-calls", "1.5"],
+    ]) {
+      const result = spawnSync("node", ["dist/cli.js", "model", "lint", robot, flag, value]);
+      expect(result.status).toBe(2);
+      expect(result.stderr.toString()).toContain(`${flag} must be a whole number of 1 or more (got "${value}")`);
+    }
+    for (const flag of ["--max-triangles", "--max-draw-calls"]) {
+      const result = spawnSync("node", ["dist/cli.js", "model", "lint", robot, flag, "100000"]);
+      expect(result.status).toBe(0);
+    }
+  });
+
   it("validates model view options and renders views", () => {
     const robot = "examples/agent-mistakes/public/models/robot.glb";
 
