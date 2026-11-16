@@ -73,6 +73,10 @@ describe("scenarios", () => {
     expect(xml).toContain('<testsuite name="scenario.b" tests="3" failures="1" errors="1"');
     expect(xml).toContain("x is &lt;undefined&gt; &amp; broken");
     expect((await runScenarios(dir, { name: "a", play: async () => fakeRun(true) })).map((r) => r.name)).toEqual(["a"]);
+    expect((await runScenarios(dir, { name: "b", play: async () => fakeRun(true) })).map((r) => r.name)).toEqual(["b"]);
+    expect((await runScenarios(dir, { name: "", play: async () => fakeRun(true) })).map((r) => r.name)).toEqual(["a", "b"]);
+    await expect(runScenarios(dir, { name: "missing", play: async () => { throw new Error("browser should not start"); } }))
+      .rejects.toThrow('no scenario matches "missing" (known: a, b)');
   });
 });
 

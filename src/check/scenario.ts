@@ -239,9 +239,14 @@ export async function runScenario(projectDir: string, s: Scenario, opts: { file?
 /** Runs the project's scenarios (those named `name`, else those whose name contains it; all without a name). */
 export async function runScenarios(projectDir: string, opts: { name?: string; play?: typeof realPlay } = {}): Promise<ScenarioResult[]> {
   let list = loadScenarios(projectDir);
-  if (opts.name) {
+  if (opts.name !== undefined) {
     const exact = list.filter((x) => x.scenario.name === opts.name);
-    list = exact.length ? exact : list.filter((x) => x.scenario.name.includes(opts.name!));
+    const matches = exact.length ? exact : list.filter((x) => x.scenario.name.includes(opts.name!));
+    if (!matches.length) {
+      const known = list.map((x) => x.scenario.name);
+      throw new ScenarioError(`no scenario matches ${JSON.stringify(opts.name)} (known: ${known.length ? known.join(", ") : "none"})`);
+    }
+    list = matches;
   }
   const out: ScenarioResult[] = [];
   for (const x of list) out.push(await runScenario(projectDir, x.scenario, { file: x.file, ...(opts.play ? { play: opts.play } : {}) }));

@@ -62,6 +62,21 @@ describe.skipIf(!existsSync("dist/cli.js"))("built cli", () => {
     expect(goodLimit.stdout.toString()).toContain("Vector3");
   });
 
+  it("rejects unmatched scenario names before writing JUnit reports", () => {
+    const dir = project({ ".threesmith/scenarios/jump.json": JSON.stringify({ name: "jump", steps: [], expect: ["1 == 1 @ end"] }) });
+    const junit = join(dir, "unmatched.xml");
+    for (const args of [[], ["--json"]]) {
+      const bad = spawnSync("node", ["dist/cli.js", "scenario", "run", "jmup", "--path", dir, "--junit", junit, ...args]);
+      expect(bad.status).toBe(2);
+      expect(bad.stderr.toString()).toContain('no scenario matches "jmup" (known: jump)');
+      expect(existsSync(junit)).toBe(false);
+    }
+    const empty = project({});
+    const noScenarios = spawnSync("node", ["dist/cli.js", "scenario", "run", "--path", empty]);
+    expect(noScenarios.status).toBe(0);
+    expect(noScenarios.stdout.toString()).toContain("No scenarios to run.");
+  });
+
   it("rejects unknown lesson filters and keeps the valid ones working", () => {
     const badTopic = spawnSync("node", ["dist/cli.js", "lessons", "--topic", "shadowz", "shadow"]);
     expect(badTopic.status).toBe(2);
