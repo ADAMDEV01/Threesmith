@@ -73,6 +73,19 @@ describe("scenarios", () => {
     expect(xml).toContain('<testsuite name="scenario.b" tests="3" failures="1" errors="1"');
     expect(xml).toContain("x is &lt;undefined&gt; &amp; broken");
     expect((await runScenarios(dir, { name: "a", play: async () => fakeRun(true) })).map((r) => r.name)).toEqual(["a"]);
+    expect((await runScenarios(dir, { name: "b", play: async () => fakeRun(true) })).map((r) => r.name)).toEqual(["b"]);
+    expect((await runScenarios(dir, { name: "", play: async () => fakeRun(true) })).map((r) => r.name)).toEqual(["a", "b"]);
+    await expect(runScenarios(dir, { name: "missing", play: async () => { throw new Error("browser should not start"); } }))
+      .rejects.toThrow('no scenario matches "missing" (known: a, b)');
+    // A typo must not dump an arbitrarily large scenario catalog into CLI/MCP output.
+    for (let i = 0; i < 25; i++) {
+      const name = `scenario-${String(i).padStart(2, "0")}`;
+      const made = scenarioFromPlay(dir, name, { target: dir, expect: ["a > 1 @ end"] });
+      writeFileSync(made.path, made.json);
+    }
+    await expect(runScenarios(dir, { name: "missing", play: async () => { throw new Error("browser should not start"); } }))
+      .rejects.toThrow('known: a, b, scenario-00, scenario-01, scenario-02, scenario-03, scenario-04, scenario-05, scenario-06, scenario-07, ... and 17 more');
+
   });
 });
 

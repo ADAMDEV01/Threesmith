@@ -17,6 +17,21 @@ async function client(readOnly = false): Promise<Client> {
 
 const textOf = (r: unknown): string => (r as { content: { type: string; text?: string }[] }).content.find((c) => c.type === "text")?.text ?? "";
 
+describe("scenario name validation over MCP", () => {
+  it("reports unmatched names without starting a browser", async () => {
+    const c = await client();
+    const dir = gamePage();
+    writeFileSync(join(dir, "package.json"), "{}");
+    const missing = await c.callTool({ name: "three_scenario", arguments: { op: "run", path: dir, name: "jmup" } });
+    expect(missing.isError).toBe(true);
+    expect(textOf(missing)).toContain('no scenario matches "jmup" (known: none)');
+    const empty = await c.callTool({ name: "three_scenario", arguments: { op: "run", path: dir } });
+    expect(empty.isError).toBeFalsy();
+    expect(textOf(empty)).toContain("No scenarios to run.");
+    await c.close();
+  });
+});
+
 describe.skipIf(!findChromium())("run tools over mcp (needs Chromium)", () => {
   it("plays, saves a passing scenario through the journal, runs it and undoes the save", async () => {
     const c = await client();
