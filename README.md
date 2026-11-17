@@ -11,6 +11,7 @@ MCP server, CLI and Claude Code plugin. Works with Claude Code, Codex, Cursor, V
   <a href="https://vscode.dev/redirect/mcp/install?name=threesmith&config=%7B%22name%22%3A%22threesmith%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22threesmith%22%2C%22mcp%22%5D%7D"><img src="https://img.shields.io/badge/VS_Code-Install_MCP_server-0098FF?logo=visualstudiocode&logoColor=white" alt="Install in VS Code"></a>
   <a href="https://cursor.com/en/install-mcp?name=threesmith&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsInRocmVlc21pdGgiLCJtY3AiXX0%3D"><img src="https://img.shields.io/badge/Cursor-Install_MCP_server-000000?logo=cursor&logoColor=white" alt="Install in Cursor"></a>
   <a href="#install-in-your-agent"><img src="https://img.shields.io/badge/Claude_Code-Add_plugin-D97757" alt="Add to Claude Code"></a>
+  <a href="https://github.com/laaielichter/Threesmith/stargazers"><img src="https://img.shields.io/github/stars/laaielichter/Threesmith?style=social" alt="GitHub stars"></a>
 </p>
 <p align="center">
   <a href="https://laaielichter.github.io/Threesmith/">Website</a> ·
@@ -215,6 +216,12 @@ From the same author, local and open source: [ReversePort](https://github.com/la
 (reverse engineer and port games between engines), [Godotwright](https://github.com/laaielichter/Godotwright)
 (check the Godot code your agent writes), [Stashpad](https://github.com/laaielichter/Stashpad)
 (agent memory you can trust) and [agentdisk](https://github.com/laaielichter/Agentdisk) (clean up after agents).
+
+## Support the project
+
+If Threesmith is useful to you, a ⭐ on [GitHub](https://github.com/laaielichter/Threesmith) helps other people find it.
+
+Thanks to everyone who has contributed: [@chiragjangiir](https://github.com/chiragjangiir), [@timmiballz22](https://github.com/timmiballz22) and [@IG-ABHINAV](https://github.com/IG-ABHINAV).
 
 ## Develop
 
