@@ -3,6 +3,8 @@
 ## Unreleased
 
 - **Review:** new `buffer-attribute-plain-array` rule: `new THREE.BufferAttribute(...)` / `new THREE.InstancedBufferAttribute(...)` with a plain array throws at load, and the review gave it 100/100 (#39). Literal arrays only for now; the plain-variable case is a follow-up. The rule count is now 98. Thanks to @IG-ABHINAV! (#39, #60)
+- **Scenarios:** `scenario run <name>` with a name that matches no scenario now fails with exit 2 (`no scenario matches "jmup" (known: jump)`, at most 10 names listed) before any browser starts, also over MCP, instead of printing "No scenarios to run." and writing an empty, green JUnit report. Thanks to @timmiballz22! (#51, #66)
+- **Model lint:** `--max-triangles` and `--max-draw-calls` refuse `abc`, `0`, `-5` and `1.5` with exit 2 instead of silently turning the budget off and scoring 100/100. Thanks to @timmiballz22! (#28, #62)
 
 ## 0.3.0
 
