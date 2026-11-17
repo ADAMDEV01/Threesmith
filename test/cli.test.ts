@@ -88,7 +88,7 @@ describe.skipIf(!existsSync("dist/cli.js"))("built cli", () => {
 
   it("rejects invalid model lint budgets and accepts valid ones", () => {
     const robot = "examples/agent-mistakes/public/models/robot.glb";
-    for (const [flag, value] of [
+    const cases: Array<[string, string]> = [
       ["--max-triangles", "abc"],
       ["--max-triangles", "0"],
       ["--max-triangles", "-5"],
@@ -97,7 +97,8 @@ describe.skipIf(!existsSync("dist/cli.js"))("built cli", () => {
       ["--max-draw-calls", "0"],
       ["--max-draw-calls", "-5"],
       ["--max-draw-calls", "1.5"],
-    ]) {
+    ];
+    for (const [flag, value] of cases) {
       const result = spawnSync("node", ["dist/cli.js", "model", "lint", robot, flag, value]);
       expect(result.status).toBe(2);
       expect(result.stderr.toString()).toContain(`${flag} must be a whole number of 1 or more (got "${value}")`);
