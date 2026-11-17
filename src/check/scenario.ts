@@ -243,8 +243,10 @@ export async function runScenarios(projectDir: string, opts: { name?: string; pl
     const exact = list.filter((x) => x.scenario.name === opts.name);
     const matches = exact.length ? exact : list.filter((x) => x.scenario.name.includes(opts.name!));
     if (!matches.length) {
-      const known = list.map((x) => x.scenario.name);
-      throw new ScenarioError(`no scenario matches ${JSON.stringify(opts.name)} (known: ${known.length ? known.join(", ") : "none"})`);
+      const known = list.slice(0, 10).map((x) => x.scenario.name);
+      const remaining = list.length - known.length;
+      const summary = known.length ? `${known.join(", ")}${remaining ? `, ... and ${remaining} more` : ""}` : "none";
+      throw new ScenarioError(`no scenario matches ${JSON.stringify(opts.name)} (known: ${summary})`);
     }
     list = matches;
   }
