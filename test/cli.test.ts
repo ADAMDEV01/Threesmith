@@ -62,6 +62,39 @@ describe.skipIf(!existsSync("dist/cli.js"))("built cli", () => {
     expect(goodLimit.stdout.toString()).toContain("Vector3");
   });
 
+  it("rejects missing paths before scanning and preserves existing path behavior", () => {
+    const missing = join(project({}), "no-such-folder");
+    const commands: Array<[string, string[]]> = [
+      ["review", []],
+      ["fix", []],
+      ["ci", []],
+      ["doctor", ["--no-env"]],
+      ["scan", []],
+      ["assets", []],
+    ];
+
+    for (const [command, extra] of commands) {
+      const result = spawnSync("node", ["dist/cli.js", command, missing, ...extra]);
+      expect(result.status).toBe(2);
+      expect(result.stderr.toString()).toContain(`threesmith: path not found: ${missing}`);
+    }
+
+    const doctorOption = spawnSync("node", ["dist/cli.js", "doctor", "--path", missing, "--no-env"]);
+    expect(doctorOption.status).toBe(2);
+    expect(doctorOption.stderr.toString()).toContain(`threesmith: path not found: ${missing}`);
+
+    const noThree = project({ "notes.txt": "This folder has no Three.js source." });
+    const noThreeReview = spawnSync("node", ["dist/cli.js", "review", noThree]);
+    expect(noThreeReview.status).toBe(0);
+    expect(noThreeReview.stdout.toString()).toContain("No three.js code found");
+
+    const validCi = spawnSync("node", ["dist/cli.js", "ci", "examples/agent-mistakes-fixed"]);
+    expect(validCi.status).toBe(0);
+
+    const singleFile = spawnSync("node", ["dist/cli.js", "review", "examples/agent-mistakes-fixed/main.js", "--three", THREE_DIR]);
+    expect(singleFile.status).toBe(0);
+  });
+
   it("rejects unmatched scenario names before writing JUnit reports", () => {
     const dir = project({ ".threesmith/scenarios/jump.json": JSON.stringify({ name: "jump", steps: [], expect: ["1 == 1 @ end"] }) });
     const junit = join(dir, "unmatched.xml");

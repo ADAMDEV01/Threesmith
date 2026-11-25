@@ -1,4 +1,4 @@
-import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { Command } from "commander";
 import { toAscii, useAscii } from "./ascii.js";
@@ -68,6 +68,10 @@ const ascii = useAscii();
 function out(s: string): void {
   const text = ascii ? toAscii(s) : s;
   process.stdout.write(text.endsWith("\n") ? text : text + "\n");
+}
+
+function existingPath(path: string): void {
+  if (!existsSync(path)) throw new Error(`path not found: ${path}`);
 }
 
 function positiveInt(name: string, value: string): number {
@@ -158,6 +162,7 @@ export function buildProgram(): Command {
     .option("--disable <rules>", "comma separated rule ids to skip")
     .action(
       (path: string, o: { three?: string; json?: boolean; markdown?: boolean; sarif?: string; compact?: boolean; limit: string; minScore?: string; failOn: string; disable?: string }) => {
+        existingPath(path);
         const disable = o.disable ? parseRuleList(o.disable, "--disable") : undefined;
         const { review: r, learned } = applyFeedback(review({ path, ...(o.three ? { three: o.three } : {}), ...(disable ? { disable } : {}) }));
         const note = formatLearned(learned);
@@ -183,6 +188,7 @@ export function buildProgram(): Command {
     .option("--rewrites", "also apply the rewrites that change more than a name (listed by the dry run)")
     .option("--json", "JSON output")
     .action((path: string, o: { three?: string; write?: boolean; only?: string; rewrites?: boolean; json?: boolean }) => {
+      existingPath(path);
       const only = o.only ? parseRuleList(o.only, "--only") : undefined;
       const r = fix({ path, ...(o.three ? { three: o.three } : {}), ...(only ? { only } : {}), ...(o.rewrites ? { rewrites: true } : {}) });
       let id = 0;
@@ -543,6 +549,7 @@ export function buildProgram(): Command {
     .option("--out <file>", "write the markdown receipt to this file")
     .option("--json", "JSON output")
     .action(async (path: string, o: { three?: string; minScore?: string; failOn: string; check?: string; entry: string; root?: string; baseline?: string; updateBaseline?: boolean; wait: string; disable?: string; scenarios: boolean; junit?: string; sarif?: string; summary?: string; out?: string; json?: boolean }) => {
+      existingPath(path);
       const disable = o.disable ? parseRuleList(o.disable, "--disable") : undefined;
       const r = await ci({
         path,
@@ -584,6 +591,7 @@ export function buildProgram(): Command {
     .option("--json", "JSON output")
     .action(async (dir: string | undefined, o: { path: string; three?: string; env?: boolean; full?: boolean; json?: boolean }) => {
       if (dir) o.path = dir;
+      existingPath(o.path);
       const envOnly = process.argv.includes("--env");
       const parts: string[] = [];
       let bad = false;
@@ -668,6 +676,7 @@ export function buildProgram(): Command {
     .option("--full", "imports per file, every asset problem, glTF extensions")
     .option("--json", "JSON output")
     .action((path: string, o: { full?: boolean; json?: boolean }) => {
+      existingPath(path);
       const m = scanProject(path);
       out(o.json ? JSON.stringify(m, null, 2) : formatProjectMap(m, o.full ? "full" : "brief"));
     });
@@ -679,6 +688,7 @@ export function buildProgram(): Command {
     .option("--limit <n>", "max problems shown", "50")
     .option("--json", "JSON output")
     .action((path: string, o: { limit: string; json?: boolean }) => {
+      existingPath(path);
       const root = projectRootOf(path);
       const r = checkAssets(root, collect(root).files);
       out(o.json ? JSON.stringify(r, null, 2) : formatAssets(r, { limit: Number(o.limit) }));
